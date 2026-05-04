@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>The Economist</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f2f2f7;color:#1a1a1a;padding:16px 14px 60px;max-width:600px;margin:0 auto;}
+.tag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:20px;font-weight:500;}
+.tag-news{background:#e6f1fb;color:#185fa5;}
+.tag-biz{background:#faeeda;color:#854f0b;}
+.tag-sci{background:#eaf3de;color:#3b6d11;}
+.tag-culture{background:#eeedfe;color:#3c3489;}
+.tag-asia{background:#faece7;color:#993c1d;}
+.pill{font-size:13px;padding:8px 15px;border-radius:20px;border:0.5px solid #ccc;background:#fff;cursor:pointer;color:#555;white-space:nowrap;}
+.pill.active{background:#1a1a1a;color:#fff;border-color:transparent;}
+.pill:active{opacity:.7;}
+.card{background:#fff;border:0.5px solid #e0e0e0;border-radius:16px;padding:15px 16px;margin-bottom:9px;}
+.card.read{opacity:.48;}
+.card.expanded{border-color:#aaa;}
+.card-top{display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
+.card-body{display:none;margin-top:12px;padding-top:12px;border-top:0.5px solid #eee;}
+.card.expanded .card-body{display:block;}
+.full-body{font-size:13px;color:#444;line-height:1.7;margin-bottom:12px;max-height:280px;overflow-y:auto;padding:10px 12px;background:#fafafa;border-radius:10px;white-space:pre-wrap;word-break:break-word;}
+.icon-btn{background:none;border:none;cursor:pointer;padding:0;line-height:1;color:#bbb;font-size:22px;min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;}
+.icon-btn:active{background:#f0f0f0;}
+.icon-btn.starred{color:#E9A800;}
+.icon-btn.done{color:#3b6d11;}
+.arow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.abtn{font-size:13px;padding:8px 14px;border-radius:20px;cursor:pointer;border:0.5px solid #ccc;background:transparent;color:#555;min-height:36px;white-space:nowrap;}
+.abtn:active{background:#f0f0f0;}
+.abtn.inv{border-color:#185fa5;color:#185fa5;}
+.abtn.inv:active{background:#e6f1fb;}
+.abox{font-size:14px;line-height:1.7;color:#1a1a1a;margin-top:8px;padding:12px 14px;background:#f5f5f5;border-radius:10px;display:none;}
+.abox.ibox{background:#f0f5ff;border-left:3px solid #185fa5;}
+.sec-head{font-size:11px;font-weight:600;color:#888;letter-spacing:.06em;text-transform:uppercase;margin:20px 0 8px 2px;}
+.empty{text-align:center;padding:56px 0;color:#888;font-size:15px;}
+.swrap{position:relative;margin-bottom:12px;}
+#si{width:100%;padding:12px 14px 12px 40px;border:0.5px solid #ccc;border-radius:14px;background:#fff;color:#1a1a1a;font-size:15px;-webkit-appearance:none;}
+#si:focus{outline:none;border-color:#888;}
+.sico{position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:.35;}
+mark{background:#FFF176;color:inherit;border-radius:2px;padding:0 1px;}
+.fscroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:10px;}
+.fscroll::-webkit-scrollbar{display:none;}
+.tbtn{font-size:14px;padding:9px 14px;border-radius:20px;cursor:pointer;border:0.5px solid #ccc;background:#fff;color:#555;min-height:40px;white-space:nowrap;}
+.tbtn:active{background:#f0f0f0;}
+.panel{display:none;margin-bottom:14px;padding:14px 16px;background:#fff;border:0.5px solid #e0e0e0;border-radius:14px;font-size:14px;line-height:1.85;}
+.ipanel{border-left:3px solid #185fa5;background:#f8faff;}
+.inv-sec{margin-bottom:10px;}
+.inv-lbl{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px;}
+.lbl-l{color:#3b6d11;}.lbl-s{color:#854f0b;}.lbl-r{color:#993c1d;}.lbl-m{color:#185fa5;}
+.inv-cnt{font-size:13px;line-height:1.65;color:#333;}
+.disc{font-size:11px;color:#aaa;text-align:center;margin-top:16px;line-height:1.5;padding:0 8px;}
+</style>
+</head>
+<body>
+
+<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:8px;">
+  <div>
+    <p style="font-size:22px;font-weight:600;">The Economist</p>
+    <p style="font-size:13px;color:#888;margin-top:4px;" id="stat"></p>
+  </div>
+  <div style="display:flex;gap:6px;flex-direction:column;align-items:flex-end;">
+    <button class="tbtn" onclick="togglePanel('week')" id="wbtn">&#36031;&#25746;&#35201;</button>
+    <button class="tbtn" style="border-color:#185fa5;color:#185fa5;" onclick="togglePanel('invest')" id="ibtn">&#128200; &#25295;&#36039;&#20998;&#26512;</button>
+  </div>
+</div>
+
+<div class="panel" id="wpanel"></div>
+<div class="panel ipanel" id="ipanel"></div>
+
+<div class="swrap">
+  <svg class="sico" width="15" height="15" viewBox="0 0 16 16" fill="none">
+    <circle cx="6.5" cy="6.5" r="5" stroke="#555" stroke-width="1.5"/>
+    <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <input id="si" type="search" placeholder="&#25628;&#23531;&#27491;&#39064;&#25110;&#20167;&#23481;..." oninput="onSearch(this.value)">
+</div>
+
+<div class="fscroll" id="dfilters"></div>
+<div class="fscroll" id="cfilters">
+  <button class="pill active" onclick="filterCat('all',this)">&#20840;&#37096;</button>
+  <button class="pill" onclick="filterCat('news',this)">&#26178;&#20107;</button>
+  <button class="pill" onclick="filterCat('biz',this)">&#36001;&#32147;</button>
+  <button class="pill" onclick="filterCat('sci',this)">&#31185;&#23416;</button>
+  <button class="pill" onclick="filterCat('culture',this)">&#25991;&#21270;</button>
+  <button class="pill" onclick="filterCat('asia',this)">&#20126;&#27954;</button>
+  <button class="pill" onclick="filterCat('starred',this)">&#9733; &#25910;&#34255;</button>
+  <button class="pill" onclick="filterCat('unread',this)">&#26410;&#35712;</button>
+</div>
+
+<div id="list"></div>
+<p class="disc">&#9888; AI &#25295;&#36039;&#20998;&#26512;&#20僅&#20379;&#21442;&#32771;&#65292;&#19981;&#27083;&#25104;&#25295;&#36039;&#24314;&#35611;&#12290;</p>
+
+<script>
+var DATA=[{id:'19defa79c5674823',subject:'The World in Brief: Trump reviews Iran\'s peace proposal',date:'2026-05-04',cat:'news',body:'May 4th 2026\nThe World in Brief\nToday\'s top stories\nDonald Trump said he would review Iran\'s latest proposal for a peace deal, but would also consider resuming strikes against military targets in the country if its leaders were to "misbehave". Iran\'s 14-point proposal includes setting a one-month deadline on negotiations to reopen the Strait of Hormuz, and subsequently starting talks on its nuclear programme, according to Axios.\nSeven countries in OPEC+, a group made up of the oil-exporting cartel and its allies, said they will raise their oil-production target by 188,000 barrels a day in June. The increase is unlikely to be achieved, however, if the Strait of Hormuz remains shut.\nThe Trump administration fast-tracked $8.6bn in arms sales to America\'s allies in the Middle East, including the UAE, Israel, Kuwait and Qatar. Invoking an emergency authorisation, the State Department bypassed Congress.\nUkraine launched a drone attack on the Russian oil-loading port of Primorsk, on the Baltic Sea. Volodymyr Zelensky said the strikes had damaged a missile ship, a patrol boat and an oil tanker.\nTwo American soldiers disappeared during a training exercise in Morocco. A Pentagon official said it appears to be an accident.\nSomali pirates reportedly hijacked an oil tanker off the coast of Yemen. The MT Eureka, which was flying under the flag of Togo, was seized in the Gulf of Aden.\nFigure of the day: 130%, the amount by which eBay\'s share price has jumped since 2024.\nThe missing millions in India\'s elections\nBy Monday evening, results will be rolling in for elections in four Indian states. The exercise was controversial: in West Bengal, more than 9m voters (roughly 12%) were disqualified after a chaotic verification drive - with a third from the Muslim minority. The impartiality of India\'s electoral referee is increasingly in doubt.\nRising antisemitism in Britain\nA series of violent antisemitic attacks has increased anxiety among British Jews to "another level", Sir Keir Starmer said. Two Jewish men were stabbed in Golders Green. Sir Keir has pledged extra police funding and faster sentencing, but Jewish leaders worry antisemitism is being normalised.\nNigeria\'s rocky economic recovery\nGDP and foreign reserves have risen; inflation is down. But in December the finance minister announced the government was set to miss its 2025 revenue target by approximately N30trn ($20bn). In April, a cabinet reshuffle saw the finance minister abruptly depart.\nThe Met Gala, sponsored by Jeff Bezos\nOn Monday New York\'s richest and most famous will descend down the steps of the Metropolitan Museum of Art. This year\'s lead sponsors are Jeff Bezos and his wife Lauren Sanchez Bezos, leading protesters to call for boycotts over the billionaire\'s closeness with Donald Trump.'},
+{id:'19dec02bcb09b0c1',subject:'Well Informed: Does acupuncture really work?',date:'2026-05-03',cat:'sci',body:'May 2nd 2026\nWell Informed - Your evidence-based guide to health and wellness\nDoes acupuncture really work?\nBy Tim Cross, Senior science writer\nQi, prana, elan vital: vitalism, the idea that living things are distinguished from non-living ones by some special energy or life force, is not generally seen as a respectable position for a modern scientist to hold.\nBut that does leave some awkward questions. The same scientific method that finds no evidence for a life force does seem to find at least some evidence that acupuncture relieves pain. The traditional explanation was that acupuncture helps release blocked qi, a form of life force postulated by traditional Chinese medicine. If qi doesn\'t exist, but acupuncture does seem to relieve pain, what\'s really going on?\nPerhaps it\'s to do with physically disturbing the nerves beneath the skin? Maybe the needles stimulate cells to release pain-killing chemicals? Might it just be reversion to the mean - in which the body\'s natural ability to heal itself coincides with a treatment?\nOr perhaps it\'s another demonstration of the power of the placebo effect, in which the mere act of treatment - regardless of what that treatment actually does, biologically speaking - can often produce an improvement in the patient. The placebo effect is a strange phenomenon that is often misunderstood. It is not merely a fancy way to dismiss something as ineffective. But it does work best at relieving subjective, self-reported symptoms. Pain fits the bill perfectly.\nAcupuncture, a Chinese practice thought to be around 3,000 years old, involves sticking needles into certain points on the body in order to promote the proper flow of qi, the body\'s vital energy. Although long pooh-poohed by Western medicine, its popularity continues to rise.\nAlso this week: Are ice baths good for you? They won\'t hurt. Actually they might, a bit.'},
+{id:'19deb609d97df169',subject:'Reform\'s pub crawl to power',date:'2026-05-03',cat:'culture',body:'May 2nd 2026\nThe Extraordinary Story - Compelling long reads, delivered every Sunday\nReform\'s pub crawl to power\nThe dinner began with a priest saying grace. It ended with Nigel Farage leading the room in a raucous singalong to "YMCA", the gay anthem that has become a staple of Donald Trump\'s rallies. Jeroboams of white burgundy and double magnums of claret flowed liberally.\nOswald\'s, one of Mayfair\'s most exclusive private-members\' clubs, is no stranger to extravagance. But at this fundraiser for Reform UK, the populist anti-immigration party that is leading the polls in Britain, even the backroom staff were startled by the excess. Tickets for the event, which took place in January 2025, cost up to 25,000 pounds per person.\nAs the guests partied at Oswald\'s another event was kicking off in a red-brick two-storey building in Blackpool, a run-down seaside town in the north-west of England. At the Talbot, two pints of Strongbow cider cost 6 pounds and a plate of homemade beef stew much less. "I\'ve been coming here 30 years," said Margaret Murphy, a retired bartender. "You\'ve got the bingo and the snooker, and everyone\'s welcome; it\'s like an extension of the family living room."\nAlso: The hidden costs of Kenya\'s marathon machine - Kelvin Kiptum had the world at his feet. Then it all ended in an instant.'},
+{id:'19de9b393f52f88b',subject:'Cover Story: Oil markets are still in La La land',date:'2026-05-02',cat:'biz',body:'Oil markets remain delusional. Despite the closure of the Strait of Hormuz, which has dramatically cut global supply, oil prices have not risen as sharply as one might expect. Deputy editor Edward Carr examines why markets have failed to price in the full risk of prolonged disruption. The cognitive dissonance in energy markets may reflect traders\' belief that any conflict will be short-lived - a bet that could prove very costly. Also: The bright bit of Britain.'},
+{id:'19de6364161b36c4',subject:'Plot Twist: The real value of a baseball-card collection',date:'2026-05-02',cat:'culture',body:'What is a baseball card really worth? The answer, it turns out, has less to do with the card itself and more to do with memory, identity, and the human need to attach meaning to objects. A conversation about nostalgia, markets, and why adults still care deeply about pieces of printed cardboard. Also: Miranda Priestly is back - The Devil Wears Prada sequel stirs up the fashion world.'},
+{id:'19de5ff6972c537f',subject:'The Bottom Line: Lessons from the soda wars',date:'2026-05-02',cat:'biz',body:'The century-long battle between Coca-Cola and PepsiCo offers timeless lessons about brand strategy, product innovation, and the limits of marketing. Coke won not because it tasted better in blind tests - it often didn\'t - but because it built an unshakeable emotional identity. The soda wars also reveal how incumbents can lose ground through complacency. Also: The AI supply crunch - why demand for AI compute is outstripping supply faster than anyone predicted, and what that means for the companies trying to build the next generation of models.'},
+{id:'19de55afec61cd0d',subject:'The World in Brief: Trump says Iran hostilities terminated',date:'2026-05-01',cat:'news',body:'Donald Trump declared that hostilities with Iran have been \'terminated\' following a ceasefire agreement. The announcement came after weeks of escalating tensions that had shut the Strait of Hormuz and sent oil markets into turmoil. The deal reportedly involves Iran agreeing to pause its nuclear enrichment programme in exchange for the lifting of some sanctions. Skeptics note that similar agreements have collapsed before. Also: A hypnotic eco-populist is rising in European politics, combining green policies with nationalist rhetoric in a potent new blend.'},
+{id:'19de110086da4ae3',subject:'Drum Tower: Hong Kong is a conduit for looted antiquities',date:'2026-05-01',cat:'asia',body:'Hong Kong has become a major transit point for looted antiquities from conflict zones in the Middle East and Africa, according to investigators. The city\'s light-touch regulatory regime and its position as a global art market hub make it attractive for traffickers. Separately, Chinese surveillance satellites have significantly boosted Iran\'s military targeting capabilities during the recent Gulf conflict, raising new questions about Beijing\'s role in the crisis.'},
+{id:'19de0359598bb0c5',subject:'The World in Brief: Iran threatens strikes on American bases',date:'2026-04-30',cat:'news',body:'Iran threatened to strike American military bases in the Middle East if the US continued its aerial campaign against Iranian territory. The threat marks a significant escalation, as Iran had previously avoided directly targeting American forces. The warning came as Iranian officials rejected the terms of a proposed ceasefire. Also: Stumbling on the runway - several major airlines reported near-miss incidents at congested airports, raising fresh safety concerns.'},
+{id:'19dde5520e1a1bd1',subject:'Money Talks: A fond Fed farewell to Jay',date:'2026-04-30',cat:'biz',body:'Jerome Powell\'s tenure as Federal Reserve chair comes to an end. Under his watch, the Fed navigated the post-pandemic inflation surge, raising rates at the fastest pace in decades before engineering a soft landing that many thought impossible. His legacy is complicated by early missteps in calling inflation \'transitory\', but ultimately the outcome - inflation back near target without a recession - vindicates his approach. What happens next at the Fed will shape markets for years. Also: The woes of San Francisco - the city that hosts much of the AI industry is struggling with empty offices, rising crime, and an identity crisis.'},
+{id:'19ddb1a45d916c6d',subject:'The World in Brief: Meta boosts AI spending',date:'2026-04-29',cat:'news',body:'Meta announced a dramatic increase in its AI capital expenditure, raising its 2026 forecast to over $70bn. The investment reflects Mark Zuckerberg\'s all-in bet on artificial intelligence as the future of the company\'s products and business model. Rivals Google and Microsoft have made similar commitments, triggering what analysts are calling an \'AI arms race\' that is reshaping the entire technology sector. Also: Iran\'s World Cup dilemma - the national football team faces pressure from the government and from players in exile over whether to participate in the tournament.'},
+{id:'19dda88ebb06f8cd',subject:'The Insider: How high will the oil price go?',date:'2026-04-29',cat:'biz',body:'With the Strait of Hormuz closed and OPEC+ struggling to compensate, the oil market faces its most serious supply disruption in decades. Goldman Sachs analysts warn that Brent crude could hit $150 per barrel if the closure persists beyond 60 days. The economic consequences would be severe: higher inflation, weaker growth, and a potential recession in import-dependent economies. Central banks face an impossible choice between fighting inflation and supporting growth.'},
+{id:'19dda4e217e28f56',subject:'Simply Science: The secrets behind a sub-two-hour marathon',date:'2026-04-29',cat:'sci',body:'Breaking the two-hour marathon barrier requires an extraordinary combination of genetics, training, nutrition, and technology. Scientists have identified the key physiological markers: exceptional oxygen uptake (VO2 max), high lactate threshold, and remarkable running economy. But new research suggests that mental frameworks matter just as much. Elite runners who believe they can break barriers literally run more efficiently. Also: How well does exercise combat depression? New large-scale studies show effects comparable to antidepressants for mild to moderate cases.'},
+{id:'19dd5f7c6736d055',subject:'The World in Brief: The UAE leaves OPEC',date:'2026-04-28',cat:'news',body:'The United Arab Emirates announced its withdrawal from OPEC, ending a decades-long membership in the oil cartel. The decision reflects the UAE\'s growing frustration with production quotas that it believes unfairly constrain its capacity as one of the world\'s lowest-cost producers. The departure could accelerate the cartel\'s fragmentation. Also: Big tech goes all in on AI - combined capital expenditure from Amazon, Microsoft, Google, and Meta is expected to exceed $300bn in 2026.'},
+{id:'19dd51157d29fb8b',subject:'Off the Charts: Captain Obvious',date:'2026-04-28',cat:'biz',body:'Data journalist Marie Segger examines the economic indicators that seem obvious in hindsight but were missed by forecasters. The pattern of \'predictable surprises\' - events that were predictable but not predicted - reveals systematic biases in how economists and analysts process information. The piece also announces the launch of The Economist\'s midterms election model, which gives probability estimates for each congressional seat. Also: Why the correlation between CEO confidence and economic performance is weaker than most people think.'},
+{id:'19dd34b40f9bc069',subject:'Asia Bulletin: Will Indonesia play it strait?',date:'2026-04-28',cat:'asia',body:'Indonesia finds itself at a strategic crossroads as the Strait of Hormuz crisis reshapes global energy flows. As a major energy importer, Indonesia is being pushed to choose sides between its traditional non-alignment policy and its growing economic ties with both America and China. President Prabowo Subianto has so far resisted pressure from both Washington and Beijing to take a clear position. Also: Why East Asia needs more ageing workers - demographic projections show that countries like Japan and South Korea will need to dramatically extend working lives to maintain economic output.'},
+{id:'19dd0c2d3aeb66f2',subject:'The World in Brief: China blocks sale of AI firm to Meta',date:'2026-04-27',cat:'news',body:'Beijing blocked Meta\'s proposed acquisition of a Chinese AI startup, citing national security concerns. The decision is seen as retaliation for American restrictions on Chinese technology companies. The episode highlights the deepening technological decoupling between the US and China, with AI becoming the central battleground. Also: Purdue Pharma faces a final reckoning - a federal judge rejected the OxyContin maker\'s controversial bankruptcy settlement that would have shielded the Sackler family from further lawsuits.'},
+{id:'19dcffad96059994',subject:'Inside Defence: Could NATO survive without America?',date:'2026-04-27',cat:'news',body:'Rachel Ellehuus, a former senior NATO official, argues that the alliance could survive reduced American commitment but would be fundamentally transformed. European defence spending has increased significantly, but the gap in capabilities - particularly in intelligence, airlift, and precision weapons - remains vast. A less American NATO would be more focused on the European theatre and less capable of global power projection. The interview reveals how European officials are quietly preparing contingency plans.'},
+{id:'19dcf08966d60977',subject:'Bartleby: AI and the paradox of choice',date:'2026-04-27',cat:'biz',body:'Andrew Palmer, Bartleby columnist, examines how AI is creating a new form of decision fatigue in the workplace. When AI tools can generate multiple excellent options for any task, workers face a harder problem: choosing between good options rather than finding any good option. Research shows this \'paradox of choice\' reduces satisfaction and productivity. The solution may be to use AI to generate options but apply clear decision frameworks in advance. Also: What happens when everyone can code? As AI coding tools democratize software development, traditional programmers worry about their future - but the evidence suggests demand for human judgment is rising, not falling.'}];
+
+var CAT_LABEL = {news:'&#26178;&#20107;',biz:'&#36001;&#32147;',sci:'&#31185;&#23416;',culture:'&#25991;&#21270;',asia:'&#20126;&#27954;'};
+var CAT_CLASS = {news:'tag-news',biz:'tag-biz',sci:'tag-sci',culture:'tag-culture',asia:'tag-asia'};
+
+var starred = {};
+var readSet = {};
+var activeCat = 'all';
+var activeDays = {};
+var allDays = true;
+var query = '';
+var panelDone = {week:false, invest:false};
+
+function loadSaved() {
+  try {
+    var s = localStorage.getItem('eco-starred');
+    var r = localStorage.getItem('eco-read');
+    if (s) JSON.parse(s).forEach(function(id){ starred[id]=1; });
+    if (r) JSON.parse(r).forEach(function(id){ readSet[id]=1; });
+  } catch(e) {}
+}
+
+function save() {
+  try {
+    localStorage.setItem('eco-starred', JSON.stringify(Object.keys(starred)));
+    localStorage.setItem('eco-read', JSON.stringify(Object.keys(readSet)));
+  } catch(e) {}
+}
+
+function fmtDay(d) {
+  var today = new Date(); today.setHours(0,0,0,0);
+  var diff = Math.round((today - new Date(d)) / 86400000);
+  var labels = ['Today','Yesterday','2d ago','3d ago','4d ago','5d ago','6d ago'];
+  return labels[diff] || d;
+}
+
+function buildDayFilters() {
+  var days = [], seen = {};
+  DATA.forEach(function(r){ if (!seen[r.date]){ seen[r.date]=1; days.push(r.date); } });
+  days.sort(function(a,b){ return b.localeCompare(a); });
+  var html = '<button class="pill active" onclick="filterDay(\'all\',this)">All</button>';
+  days.forEach(function(d) {
+    var n = DATA.filter(function(r){ return r.date===d; }).length;
+    html += '<button class="pill" onclick="filterDay(\'' + d + '\',this)">' + fmtDay(d) + ' <span style="opacity:.5">' + n + '</span></button>';
+  });
+  document.getElementById('dfilters').innerHTML = html;
+}
+
+function filterDay(val, btn) {
+  document.querySelectorAll('#dfilters .pill').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  if (val === 'all') { allDays = true; activeDays = {}; }
+  else { allDays = false; activeDays = {}; activeDays[val] = 1; }
+  render();
+}
+
+function filterCat(val, btn) {
+  document.querySelectorAll('#cfilters .pill').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  activeCat = val; render();
+}
+
+function onSearch(val) { query = val.toLowerCase().trim(); render(); }
+
+function hl(text, q) {
+  if (!q) return text;
+  var re = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+function filtered() {
+  return DATA.filter(function(r) {
+    if (!allDays && Object.keys(activeDays).length > 0 && !activeDays[r.date]) return false;
+    if (activeCat === 'starred' && !starred[r.id]) return false;
+    if (activeCat === 'unread' && readSet[r.id]) return false;
+    if (activeCat !== 'all' && activeCat !== 'starred' && activeCat !== 'unread' && r.cat !== activeCat) return false;
+    if (query && (r.subject + ' ' + r.body).toLowerCase().indexOf(query) < 0) return false;
+    return true;
+  });
+}
+
+function updateStat() {
+  var unread = DATA.filter(function(r){ return !readSet[r.id]; }).length;
+  var parts = [DATA.length + ' emails'];
+  if (unread < DATA.length) parts.push(unread + ' unread');
+  var sc = Object.keys(starred).length;
+  if (sc) parts.push(sc + ' starred');
+  document.getElementById('stat').textContent = parts.join(' / ');
+}
+
+function render() {
+  updateStat();
+  var items = filtered();
+  var el = document.getElementById('list');
+  if (!items.length) { el.innerHTML = '<div class="empty">No results</div>'; return; }
+  var byDay = {};
+  items.forEach(function(r){ if (!byDay[r.date]) byDay[r.date]=[]; byDay[r.date].push(r); });
+  var days = Object.keys(byDay).sort(function(a,b){ return b.localeCompare(a); });
+  var html = '';
+  days.forEach(function(day) {
+    html += '<div class="sec-head">' + fmtDay(day) + ' &middot; ' + day.slice(5).replace('-','/') + ' <span style="font-weight:400;opacity:.6">' + byDay[day].length + '</span></div>';
+    byDay[day].forEach(function(r) {
+      var isRead = !!readSet[r.id], isStar = !!starred[r.id];
+      var m = r.subject.match(/^([^:]+):/);
+      var series = m ? m[1] : '';
+      var rawTitle = m ? r.subject.slice(series.length+2).trim() : r.subject;
+      var title = hl(rawTitle, query);
+      var bodyPreview = hl(r.body.slice(0,150).replace(/\n/g,' '), query);
+      html += '<div class="card' + (isRead?' read':'') + '" id="card-' + r.id + '">';
+      html += '<div class="card-top" onclick="toggleCard(\'' + r.id + '\')">';
+      html += '<div style="flex:1;min-width:0;">';
+      if (series) html += '<p style="font-size:12px;font-weight:500;color:#888;margin:0 0 3px;">' + series + '</p>';
+      html += '<p style="font-size:15px;font-weight:' + (isRead?'400':'600') + ';margin:0;line-height:1.45;">' + title + '</p>';
+      html += '<div style="margin-top:6px;"><span class="tag ' + (CAT_CLASS[r.cat]||'') + '">' + (CAT_LABEL[r.cat]||r.cat) + '</span></div>';
+      html += '</div>';
+      html += '<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;margin-left:4px;">';
+      html += '<button class="icon-btn' + (isStar?' starred':'') + '" onclick="event.stopPropagation();toggleStar(\'' + r.id + '\')">' + (isStar?'&#9733;':'&#9734;') + '</button>';
+      html += '<button class="icon-btn' + (isRead?' done':'') + '" onclick="event.stopPropagation();toggleRead(\'' + r.id + '\')">' + (isRead?'&#10003;':'&#9675;') + '</button>';
+      html += '</div></div>';
+      html += '<div class="card-body" id="body-' + r.id + '">';
+      html += '<div class="full-body">' + r.body.replace(/\n/g,'<br>') + '</div>';
+      html += '<div class="arow">';
+      html += '<button class="abtn" onclick="summarizeOne(\'' + r.id + '\')">&#128221; Summary</button>';
+      html += '<button class="abtn inv" onclick="analyzeOne(\'' + r.id + '\')">&#128200; Invest</button>';
+      html += '</div>';
+      html += '<div class="abox" id="ai-' + r.id + '"></div>';
+      html += '<div class="abox ibox" id="inv-' + r.id + '"></div>';
+      html += '</div></div>';
+    });
+  });
+  el.innerHTML = html;
+}
+
+function toggleCard(id) {
+  document.getElementById('card-' + id).classList.toggle('expanded');
+  if (!readSet[id]) { readSet[id]=1; save(); updateStat(); }
+}
+function toggleStar(id) { if (starred[id]) delete starred[id]; else starred[id]=1; save(); render(); }
+function toggleRead(id) { if (readSet[id]) delete readSet[id]; else readSet[id]=1; save(); render(); }
+
+function apiCall(payload) {
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  }).then(function(r){ return r.json(); });
+}
+
+function extractText(data) {
+  var blocks = data.content || [];
+  for (var i = 0; i < blocks.length; i++) {
+    if (blocks[i].type === 'text' && blocks[i].text) return blocks[i].text;
+  }
+  return '';
+}
+
+function getArticle(id) {
+  for (var i = 0; i < DATA.length; i++) { if (DATA[i].id === id) return DATA[i]; }
+  return null;
+}
+
+function summarizeOne(id) {
+  var a = getArticle(id);
+  var box = document.getElementById('ai-' + id);
+  box.style.display = 'block'; box.textContent = 'Generating...';
+  apiCall({
+    model: 'claude-sonnet-4-20250514', max_tokens: 600,
+    system: 'Summarize this Economist newsletter in 3-5 sentences in Traditional Chinese, covering main arguments and key data points.',
+    messages: [{role:'user', content: 'Title: ' + a.subject + '\n\n' + a.body}]
+  }).then(function(data) {
+    box.textContent = extractText(data) || 'Failed';
+  }).catch(function(e) { box.textContent = 'Error: ' + e.message; });
+}
+
+function analyzeOne(id) {
+  var a = getArticle(id);
+  var box = document.getElementById('inv-' + id);
+  box.style.display = 'block'; box.textContent = 'Analyzing...';
+  apiCall({
+    model: 'claude-sonnet-4-20250514', max_tokens: 800,
+    system: 'You are a senior investment analyst. Based on this Economist article, provide analysis in Traditional Chinese:\n\n===MACRO===\nMacro implications (1-2 sentences)\n\n===LONG===\nLong-term opportunities (2-3 bullets):\n- Sector: reason\n\n===SHORT===\nShort-term catalysts (1-2 bullets):\n- Theme: logic\n\n===RISK===\nRisk warnings (2-3 bullets):\n- Risk: impact',
+    messages: [{role:'user', content: 'Title: ' + a.subject + '\n\n' + a.body}]
+  }).then(function(data) {
+    box.innerHTML = formatInv(extractText(data) || '');
+  }).catch(function(e) { box.innerHTML = 'Error: ' + e.message; });
+}
+
+function formatInv(text) {
+  var defs = {MACRO:{label:'&#128202; Macro',cls:'lbl-m'}, LONG:{label:'&#128200; Long-term',cls:'lbl-l'}, SHORT:{label:'&#9889; Short-term',cls:'lbl-s'}, RISK:{label:'&#9888; Risk',cls:'lbl-r'}};
+  var parts = text.split(/===(\w+)===/);
+  var html = '';
+  for (var i = 1; i < parts.length; i += 2) {
+    var d = defs[parts[i]]; if (!d) continue;
+    html += '<div class="inv-sec"><div class="inv-lbl ' + d.cls + '">' + d.label + '</div>';
+    html += '<div class="inv-cnt">' + (parts[i+1]||'').trim().replace(/\n/g,'<br>') + '</div></div>';
+  }
+  return html || text.replace(/\n/g,'<br>');
+}
+
+function togglePanel(type) {
+  var panel = document.getElementById(type==='week' ? 'wpanel' : 'ipanel');
+  var btn = document.getElementById(type==='week' ? 'wbtn' : 'ibtn');
+  var isOpen = panel.style.display === 'block';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (isOpen) { btn.textContent = type==='week' ? '\u9031\u6458\u8981' : '\u{1F4C8} \u6295\u8CC7\u5206\u6790'; return; }
+  btn.textContent = 'Close';
+  if (panelDone[type]) return;
+  panelDone[type] = true;
+  var headlines = DATA.map(function(r){ return r.date + ' | ' + r.subject + ': ' + r.body.slice(0,200); }).join('\n\n');
+  panel.textContent = 'Generating...';
+  if (type === 'week') {
+    apiCall({
+      model: 'claude-sonnet-4-20250514', max_tokens: 800,
+      system: 'Write a weekly digest of The Economist newsletters in Traditional Chinese. List 3-4 major topic axes, one sentence each. Format with emoji headers.',
+      messages: [{role:'user', content: headlines}]
+    }).then(function(data) {
+      panel.innerHTML = (extractText(data)||'').replace(/\n/g,'<br>');
+    }).catch(function(e) { panel.textContent = 'Error: ' + e.message; });
+  } else {
+    apiCall({
+      model: 'claude-sonnet-4-20250514', max_tokens: 1500,
+      system: 'You are a senior investment analyst. Based on this week\'s Economist content, provide weekly investment analysis in Traditional Chinese:\n\n===MACRO===\nWeekly macro environment (2-3 sentences)\n\n===LONG===\nLong-term sectors (3-4 bullets): - Sector: reason\n\n===SHORT===\nShort-term opportunities (2-3 bullets): - Theme: logic\n\n===RISK===\nKey risks (3 bullets): - Risk: impact\n\nKeywords: 6 comma-separated keywords to track',
+      messages: [{role:'user', content: headlines}]
+    }).then(function(data) {
+      panel.innerHTML = formatInv(extractText(data)||'');
+    }).catch(function(e) { panel.innerHTML = 'Error: ' + e.message; });
+  }
+}
+
+loadSaved();
+buildDayFilters();
+render();
+</script>
+</body>
+</html>
